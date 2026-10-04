@@ -1,85 +1,254 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Server Scout — find Discord communities by country</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="alternate icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='19' fill='none' stroke='%235b9cff' stroke-width='5'/><circle cx='32' cy='32' r='7' fill='%235b9cff'/></svg>">
-<meta name="theme-color" content="#0b0e14">
 <meta name="description" content="Find active Discord communities by country — German-speaking, Canada, France, Spain, Italy, Poland and the Netherlands.">
 <meta property="og:title" content="Server Scout — find Discord communities by country">
 <meta property="og:description" content="68 active Discord servers across 7 countries, with live member and online counts.">
 <meta property="og:type" content="website">
+<meta property="og:image" content="https://bolt.new/static/og_default.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://bolt.new/static/og_default.png">
 <style>
-  :root{
-    --bg:#0b0e14; --panel:#141926; --panel2:#1b2233; --line:#26304a;
-    --txt:#e8ecf5; --mut:#93a0bd; --acc:#5b9cff;
+  /* ===== Color System ===== */
+  :root[data-theme="dark"]{
+    --bg:#0a0d14;
+    --bg-grad:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(91,156,255,.10), transparent 60%);
+    --surface:#121721;
+    --surface-2:#1a2030;
+    --surface-3:#222a3d;
+    --border:#2a3450;
+    --border-hover:#3d4f7a;
+    --txt:#eef2fa;
+    --txt-secondary:#b4c0db;
+    --mut:#7a8aaa;
+    --acc:#5b9cff;
+    --acc-hover:#7bb0ff;
+    --acc-soft:rgba(91,156,255,.12);
+    --acc-text:#0a0d14;
+    --online:#3ddc84;
+    --online-soft:rgba(61,220,132,.12);
+    --shadow:0 4px 24px rgba(0,0,0,.35);
+    --shadow-lg:0 8px 40px rgba(0,0,0,.45);
+    --glow:0 0 20px rgba(91,156,255,.15);
   }
+  :root[data-theme="light"]{
+    --bg:#f5f7fb;
+    --bg-grad:radial-gradient(ellipse 80% 60% at 50% -10%, rgba(91,156,255,.08), transparent 60%);
+    --surface:#ffffff;
+    --surface-2:#f0f3f9;
+    --surface-3:#e6ebf5;
+    --border:#dce3ef;
+    --border-hover:#b8c5dd;
+    --txt:#1a2235;
+    --txt-secondary:#475569;
+    --mut:#8b97ad;
+    --acc:#2563eb;
+    --acc-hover:#1d4ed8;
+    --acc-soft:rgba(37,99,235,.08);
+    --acc-text:#ffffff;
+    --online:#16a34a;
+    --online-soft:rgba(22,163,74,.10);
+    --shadow:0 2px 12px rgba(15,23,42,.08);
+    --shadow-lg:0 8px 32px rgba(15,23,42,.12);
+    --glow:0 0 20px rgba(37,99,235,.08);
+  }
+
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--txt);
-    font:16px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    background-image:var(--bg-grad);
+    background-attachment:fixed;
+    color:var(--txt);
+    font:16px/1.6 "Inter",ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background-color .3s ease,color .3s ease;
+  }
+  a{color:inherit}
 
-  header{padding:52px 0 26px;border-bottom:1px solid var(--line)}
-  h1{font-size:clamp(26px,4.6vw,42px);letter-spacing:-.02em;font-weight:800}
-  h1 em{font-style:normal;color:var(--acc)}
-  .sub{color:var(--mut);margin-top:12px;max-width:64ch}
+  /* ===== Layout ===== */
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px 80px}
 
-  .search{display:flex;gap:10px;margin:26px 0 16px;flex-wrap:wrap}
-  input[type=search]{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--line);
-    color:var(--txt);padding:14px 16px;border-radius:12px;font-size:16px}
-  input[type=search]:focus{outline:2px solid var(--acc);outline-offset:1px}
+  /* ===== Nav Bar ===== */
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:20px 0;
+  }
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;letter-spacing:-.01em}
+  .logo-dot{
+    width:28px;height:28px;border-radius:8px;
+    background:linear-gradient(135deg,var(--acc),var(--acc-hover));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow);
+  }
+  .logo-dot svg{width:16px;height:16px;fill:var(--acc-text)}
 
+  .theme-toggle{
+    background:var(--surface);border:1px solid var(--border);
+    width:42px;height:42px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--txt-secondary);
+    transition:all .2s ease;
+  }
+  .theme-toggle:hover{border-color:var(--border-hover);color:var(--acc);transform:scale(1.05)}
+  .theme-toggle svg{width:20px;height:20px;fill:currentColor}
+  .theme-toggle .sun{display:none}
+  .theme-toggle .moon{display:block}
+  :root[data-theme="light"] .theme-toggle .sun{display:block}
+  :root[data-theme="light"] .theme-toggle .moon{display:none}
+
+  /* ===== Hero ===== */
+  .hero{padding:48px 0 32px}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--acc-soft);border:1px solid var(--border);
+    color:var(--acc);font-size:13px;font-weight:600;
+    padding:7px 14px;border-radius:999px;margin-bottom:20px;
+  }
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--online);animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+
+  h1{
+    font-size:clamp(28px,5vw,46px);letter-spacing:-.025em;font-weight:800;
+    line-height:1.15;
+  }
+  h1 em{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc-hover));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:var(--txt-secondary);margin-top:16px;max-width:62ch;font-size:17px}
+
+  .hero-stats{display:flex;gap:32px;margin-top:28px;flex-wrap:wrap}
+  .hero-stat .num{font-size:28px;font-weight:800;letter-spacing:-.02em}
+  .hero-stat .lbl{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
+
+  /* ===== Search ===== */
+  .search{display:flex;gap:10px;margin:28px 0 14px;flex-wrap:wrap}
+  .search-wrap{flex:1;min-width:240px;position:relative}
+  .search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;fill:var(--mut);pointer-events:none}
+  input[type=search]{
+    width:100%;background:var(--surface);border:1px solid var(--border);
+    color:var(--txt);padding:14px 16px 14px 46px;border-radius:14px;font-size:16px;
+    transition:all .2s ease;
+  }
+  input[type=search]::placeholder{color:var(--mut)}
+  input[type=search]:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+
+  /* ===== Tabs ===== */
   .tabs{display:flex;gap:8px;flex-wrap:wrap}
-  .tabs button{background:var(--panel);border:1px solid var(--line);color:var(--txt);
-    padding:11px 15px;border-radius:11px;font-size:14.5px;font-weight:600;cursor:pointer}
-  .tabs button:hover{background:var(--panel2)}
-  .tabs button.on{background:var(--acc);border-color:var(--acc);color:#06101f}
-  .count{color:var(--mut);font-size:14px;margin:14px 0 22px}
+  .tabs button{
+    background:var(--surface);border:1px solid var(--border);color:var(--txt-secondary);
+    padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;
+    transition:all .2s ease;display:flex;align-items:center;gap:7px;
+  }
+  .tabs button:hover{background:var(--surface-2);border-color:var(--border-hover);color:var(--txt)}
+  .tabs button.on{
+    background:var(--acc);border-color:var(--acc);color:var(--acc-text);
+    box-shadow:var(--glow);
+  }
+  .count{color:var(--mut);font-size:14px;margin:16px 0 22px;font-weight:500}
 
+  /* ===== Grid & Cards ===== */
   .grid{display:grid;gap:14px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;
-    display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;
+    display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;
+    transition:all .25s ease;position:relative;overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;
+    background:var(--acc);opacity:0;transition:opacity .25s ease;
+  }
+  .card:hover{border-color:var(--border-hover);box-shadow:var(--shadow);transform:translateY(-1px)}
+  .card:hover::before{opacity:1}
   @media(max-width:640px){.card{grid-template-columns:1fr}}
-  .card:hover{border-color:#3a4a70}
-  .name{font-size:19px;font-weight:700}
-  .desc{color:var(--mut);margin-top:8px;font-size:15px}
-  .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
-  .chip{font-size:12.5px;padding:5px 10px;border-radius:999px;background:var(--panel2);
-    border:1px solid var(--line);color:var(--mut)}
-  .chip.num{color:var(--txt)}
-  .chip.flag{font-size:14px;padding:4px 11px}
-  .stats{display:flex;gap:16px;align-items:center;white-space:nowrap}
-  .stat{text-align:center}
-  .stat b{display:block;font-size:20px;font-weight:800}
-  .stat span{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
-  .stat.on b{color:#5fd08a}
-  .join{background:var(--acc);color:#06101f;text-decoration:none;font-weight:700;
-    font-size:14.5px;padding:11px 18px;border-radius:11px;display:inline-block}
 
-  .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--acc);
-    border-radius:12px;padding:18px 20px;margin:34px 0 10px}
-  .note h3{font-size:16px;margin-bottom:8px}
-  .note p,.note li{color:var(--mut);font-size:14.5px}
-  .note ul{margin:8px 0 0 18px}
-  footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);color:var(--mut);font-size:14px}
+  .name{font-size:18px;font-weight:700;letter-spacing:-.01em}
+  .desc{color:var(--txt-secondary);margin-top:7px;font-size:14.5px;line-height:1.55}
+  .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+  .chip{
+    font-size:12px;padding:5px 11px;border-radius:999px;background:var(--surface-2);
+    border:1px solid var(--border);color:var(--mut);font-weight:500;
+    transition:all .2s ease;
+  }
+  .chip.num{color:var(--txt-secondary);background:var(--acc-soft);border-color:transparent}
+  .chip.flag{font-size:13px;padding:4px 12px}
+
+  .stats{display:flex;gap:18px;align-items:center;white-space:nowrap}
+  .stat{text-align:center}
+  .stat b{display:block;font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .stat span{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em}
+  .stat.on b{color:var(--online)}
+  .stat.on{background:var(--online-soft);padding:8px 14px;border-radius:12px}
+
+  .join{
+    background:var(--acc);color:var(--acc-text);text-decoration:none;font-weight:700;
+    font-size:14px;padding:11px 20px;border-radius:12px;display:inline-flex;align-items:center;gap:6px;
+    transition:all .2s ease;
+  }
+  .join:hover{background:var(--acc-hover);transform:translateY(-1px);box-shadow:var(--shadow)}
+  .join svg{width:15px;height:15px;fill:currentColor;transition:transform .2s ease}
+  .join:hover svg{transform:translateX(2px)}
+
+  .empty{text-align:center;padding:48px 20px;color:var(--mut)}
+  .empty svg{width:40px;height:40px;fill:var(--border);margin-bottom:12px}
+
+  /* ===== Note ===== */
+  .note{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:16px;padding:22px 24px;margin:36px 0 10px;
+  }
+  .note h3{font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .note h3 svg{width:18px;height:18px;fill:var(--acc)}
+  .note p,.note li{color:var(--txt-secondary);font-size:14.5px;line-height:1.6}
+  .note ul{margin:10px 0 0 20px}
+  .note li{margin-bottom:4px}
+
+  /* ===== Footer ===== */
+  footer{
+    margin-top:44px;padding-top:22px;border-top:1px solid var(--border);
+    color:var(--mut);font-size:13.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  }
+
+  /* ===== Animations ===== */
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  .card{animation:fadeInUp .4s ease backwards}
 </style>
-  <meta property="og:image" content="https://bolt.new/static/og_default.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
 </head>
 <body>
 <div class="wrap">
 
-<header>
-  <h1>Server Scout — find Discord communities <em>by country</em></h1>
+<nav class="nav">
+  <div class="logo">
+    <div class="logo-dot"><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm-1-13v6l5 3 .8-1.3L12 12.5V7h-1z"/></svg></div>
+    Server Scout
+  </div>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+    <svg class="sun" viewBox="0 0 24 24"><path d="M12 17a5 5 0 100-10 5 5 0 000 10zM12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+  </button>
+</nav>
+
+<section class="hero">
+  <div class="badge"><span class="dot"></span> 68 live servers across 7 countries</div>
+  <h1>Find Discord communities <em>by country</em></h1>
   <p class="sub">Active servers in the German-speaking world, Canada, France, Spain, Italy, Poland and
      the Netherlands. Every entry is a real, live listing with a direct link to its Discord page.</p>
-</header>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num" id="statTotal">68</div><div class="lbl">Servers</div></div>
+    <div class="hero-stat"><div class="num">7</div><div class="lbl">Countries</div></div>
+    <div class="hero-stat"><div class="num" id="statOnline">—</div><div class="lbl">Online now</div></div>
+  </div>
+</section>
 
 <div class="search">
-  <input type="search" id="q" placeholder="Search by name, game or topic — e.g. Minecraft, anime, RP…">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg>
+    <input type="search" id="q" placeholder="Search by name, game or topic — e.g. Minecraft, anime, RP…">
+  </div>
 </div>
 
 <div class="tabs" id="tabs"></div>
@@ -88,7 +257,7 @@
 <div class="grid" id="list"></div>
 
 <div class="note">
-  <h3>How the links work</h3>
+  <h3><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg> How the links work</h3>
   <p>Discord invites expire and change often. Instead of guessing invite URLs, every
      <b>Join</b> button here opens that server's official Discord page — where the current working
      invite is right on the page. One click, then you're in.</p>
@@ -100,11 +269,27 @@
 </div>
 
 <footer>
-  Not affiliated with Discord Inc. Server names and descriptions belong to their respective owners.
+  <span>Not affiliated with Discord Inc. Server names and descriptions belong to their respective owners.</span>
 </footer>
 </div>
 
 <script>
+/* ===== Theme Toggle ===== */
+const html = document.documentElement;
+const toggle = document.getElementById("themeToggle");
+const saved = localStorage.getItem("ss-theme");
+if (saved) html.setAttribute("data-theme", saved);
+else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches)
+  html.setAttribute("data-theme","light");
+
+toggle.addEventListener("click", () => {
+  const cur = html.getAttribute("data-theme");
+  const next = cur === "dark" ? "light" : "dark";
+  html.setAttribute("data-theme", next);
+  localStorage.setItem("ss-theme", next);
+});
+
+/* ===== Data ===== */
 const D = [
  // ============ GERMAN ============
  {n:"VALORANT Germany", d:"The German/Austrian/Swiss VALORANT community — player finder, rank help and game discussion.", m:"81,053", on:"11,236", c:"de", t:["gaming","valorant","esports"]},
@@ -201,10 +386,17 @@ const list=document.getElementById("list"), countEl=document.getElementById("cou
       tabsEl=document.getElementById("tabs");
 let filter="all";
 
-// build tabs
-tabsEl.innerHTML = [["all","🌍 All"]].concat(
-  Object.entries(C).map(([k,v])=>[k, v.f+" "+v.label])
-).map(([k,lab])=>`<button data-f="${k}">${lab}</button>`).join("");
+/* ===== Online count for hero ===== */
+  let total=0;
+  D.forEach(s=>{ if(s.on!=="—"){ const n=parseInt(s.on.replace(/,/g,"")); if(n) total+=n; } });
+  document.getElementById("statTotal").textContent=D.length;
+  document.getElementById("statOnline").textContent=total>0 ? total.toLocaleString() : "—";
+})();
+
+/* ===== Build tabs ===== */
+tabsEl.innerHTML = [["all","🌍","All"]].concat(
+  Object.entries(C).map(([k,v])=>[k, v.f, v.label])
+).map(([k,flag,lab])=>`<button data-f="${k}"><span>${flag}</span> ${lab}</button>`).join("");
 
 function urlFor(s){ return "https://discord.com/servers/gaming?query=" + C[s.c].q; }
 
@@ -218,8 +410,8 @@ function render(){
   countEl.textContent=items.length+(items.length===1?" server":" servers")
     +(filter==="all"?"":" in "+C[filter].label+" communities");
 
-  list.innerHTML=items.map(s=>`
-    <div class="card">
+  list.innerHTML=items.map((s,i)=>`
+    <div class="card" style="animation-delay:${i*30}ms">
       <div>
         <div class="name">${s.n}</div>
         <div class="desc">${s.d}</div>
@@ -231,9 +423,9 @@ function render(){
       </div>
       <div class="stats">
         ${s.on!=="—"?`<div class="stat on"><b>${s.on}</b><span>online</span></div>`:""}
-        <a class="join" href="${urlFor(s)}" target="_blank" rel="noopener">Join →</a>
+        <a class="join" href="${urlFor(s)}" target="_blank" rel="noopener">Join <svg viewBox="0 0 24 24"><path d="M14 5l7 7-7 7v-4H3v-6h11V5z"/></svg></a>
       </div>
-    </div>`).join("") || `<p class="count">Nothing matched. Try a broader search.</p>`;
+    </div>`).join("") || `<div class="empty"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg><br>Nothing matched. Try a broader search.</div>`;
 }
 
 document.getElementById("q").addEventListener("input",render);
