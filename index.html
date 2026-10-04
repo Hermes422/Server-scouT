@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Server Scout — find Discord communities by country</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="alternate icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='19' fill='none' stroke='%235b9cff' stroke-width='5'/><circle cx='32' cy='32' r='7' fill='%235b9cff'/></svg>">
+<meta name="theme-color" content="#0b0e14">
+<meta name="description" content="Find active Discord communities by country — German-speaking, Canada, France, Spain, Italy, Poland and the Netherlands.">
+<meta property="og:title" content="Server Scout — find Discord communities by country">
+<meta property="og:description" content="68 active Discord servers across 7 countries, with live member and online counts.">
+<meta property="og:type" content="website">
+<style>
+  :root{
+    --bg:#0b0e14; --panel:#141926; --panel2:#1b2233; --line:#26304a;
+    --txt:#e8ecf5; --mut:#93a0bd; --acc:#5b9cff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--txt);
+    font:16px/1.55 ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+
+  header{padding:52px 0 26px;border-bottom:1px solid var(--line)}
+  h1{font-size:clamp(26px,4.6vw,42px);letter-spacing:-.02em;font-weight:800}
+  h1 em{font-style:normal;color:var(--acc)}
+  .sub{color:var(--mut);margin-top:12px;max-width:64ch}
+
+  .search{display:flex;gap:10px;margin:26px 0 16px;flex-wrap:wrap}
+  input[type=search]{flex:1;min-width:240px;background:var(--panel);border:1px solid var(--line);
+    color:var(--txt);padding:14px 16px;border-radius:12px;font-size:16px}
+  input[type=search]:focus{outline:2px solid var(--acc);outline-offset:1px}
+
+  .tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .tabs button{background:var(--panel);border:1px solid var(--line);color:var(--txt);
+    padding:11px 15px;border-radius:11px;font-size:14.5px;font-weight:600;cursor:pointer}
+  .tabs button:hover{background:var(--panel2)}
+  .tabs button.on{background:var(--acc);border-color:var(--acc);color:#06101f}
+  .count{color:var(--mut);font-size:14px;margin:14px 0 22px}
+
+  .grid{display:grid;gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;
+    display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+  @media(max-width:640px){.card{grid-template-columns:1fr}}
+  .card:hover{border-color:#3a4a70}
+  .name{font-size:19px;font-weight:700}
+  .desc{color:var(--mut);margin-top:8px;font-size:15px}
+  .meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+  .chip{font-size:12.5px;padding:5px 10px;border-radius:999px;background:var(--panel2);
+    border:1px solid var(--line);color:var(--mut)}
+  .chip.num{color:var(--txt)}
+  .chip.flag{font-size:14px;padding:4px 11px}
+  .stats{display:flex;gap:16px;align-items:center;white-space:nowrap}
+  .stat{text-align:center}
+  .stat b{display:block;font-size:20px;font-weight:800}
+  .stat span{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em}
+  .stat.on b{color:#5fd08a}
+  .join{background:var(--acc);color:#06101f;text-decoration:none;font-weight:700;
+    font-size:14.5px;padding:11px 18px;border-radius:11px;display:inline-block}
+
+  .note{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--acc);
+    border-radius:12px;padding:18px 20px;margin:34px 0 10px}
+  .note h3{font-size:16px;margin-bottom:8px}
+  .note p,.note li{color:var(--mut);font-size:14.5px}
+  .note ul{margin:8px 0 0 18px}
+  footer{margin-top:44px;padding-top:22px;border-top:1px solid var(--line);color:var(--mut);font-size:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Server Scout — find Discord communities <em>by country</em></h1>
+  <p class="sub">Active servers in the German-speaking world, Canada, France, Spain, Italy, Poland and
+     the Netherlands. Every entry is a real, live listing with a direct link to its Discord page.</p>
+</header>
+
+<div class="search">
+  <input type="search" id="q" placeholder="Search by name, game or topic — e.g. Minecraft, anime, RP…">
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="count" id="count"></div>
+
+<div class="grid" id="list"></div>
+
+<div class="note">
+  <h3>How the links work</h3>
+  <p>Discord invites expire and change often. Instead of guessing invite URLs, every
+     <b>Join</b> button here opens that server's official Discord page — where the current working
+     invite is right on the page. One click, then you're in.</p>
+  <ul>
+    <li>Member counts are the servers' own figures and may drift by up to a week.</li>
+    <li>Online counts are approximate, current within about six hours.</li>
+    <li>Check a server's rules and age requirements before posting.</li>
+  </ul>
+</div>
+
+<footer>
+  Not affiliated with Discord Inc. Server names and descriptions belong to their respective owners.
+</footer>
+</div>
+
+<script>
+const D = [
+ // ============ GERMAN ============
+ {n:"VALORANT Germany", d:"The German/Austrian/Swiss VALORANT community — player finder, rank help and game discussion.", m:"81,053", on:"11,236", c:"de", t:["gaming","valorant","esports"]},
+ {n:"Rocket League Germany", d:"The largest and most active Rocket League Discord in the German-speaking world.", m:"47,189", on:"3,787", c:"de", t:["gaming","rocket league","esports"]},
+ {n:"Dead by Daylight [GER]", d:"Daily matchmaking, survivor and killer mains, plus general German gaming chat.", m:"40,627", on:"17,261", c:"de", t:["gaming","dead by daylight","horror"]},
+ {n:"BTE-Germany.de", d:"Building Germany 1:1 in Minecraft — join and help finish it faster.", m:"24,652", on:"1,148", c:"de", t:["gaming","minecraft","building"]},
+ {n:"Destiny 2 Germany", d:"German Destiny 2 server focused on finding players to fireteam with.", m:"18,975", on:"1,979", c:"de", t:["gaming","destiny 2","shooters"]},
+ {n:"Apex Legends Germany", d:"The biggest German-language Apex Legends server. LFG and ranked help.", m:"31,989", on:"4,764", c:"de", t:["gaming","apex legends","battle royale"]},
+ {n:"Deutsch Lernen und Debattieren", d:"German-language debate server — daily articles and Cinema Nights. Ideal for German practice.", m:"19,855", on:"—", c:"de", t:["education","language","debate"]},
+ {n:"Phasmophobia Deutschland", d:"Largest German-language Phasmophobia community and an official partner server.", m:"13,706", on:"—", c:"de", t:["gaming","phasmophobia","horror"]},
+ {n:"Minecraft Germany", d:"German-speaking Minecraft community — vanilla, modded, SMP and redstone.", m:"14,722", on:"1,297", c:"de", t:["gaming","minecraft","smp"]},
+ {n:"Roblox Germany", d:"Unofficial German Roblox server — Grow a Garden, Steal a Brainrot and more.", m:"14,785", on:"570", c:"de", t:["gaming","roblox"]},
+ {n:"Gerxhub", d:"Large German-speaking anime, gaming and hanging-out community.", m:"14,123", on:"—", c:"de", t:["anime","gaming","social"]},
+ {n:"Battlefield 6 Germany", d:"Largest German Battlefield 6 server — active community, daily matchmaking.", m:"12,700", on:"—", c:"de", t:["gaming","battlefield","shooters"]},
+ {n:"VRChat Germany", d:"Meeting point for the German VRChat community — events and help.", m:"3,939", on:"642", c:"de", t:["vrchat","gaming","social"]},
+ {n:"Café Velasten", d:"German anime, gaming and general community.", m:"3,150", on:"—", c:"de", t:["anime","gaming","chill"]},
+ {n:"German Battleground", d:"Hell Let Loose community — finding players and running Wardogs servers.", m:"2,137", on:"239", c:"de", t:["gaming","hll","military"]},
+ {n:"MindFrag CS2 — Germany", d:"Active German CS2 community — Premier, FACEIT, Wingman and matchmaking.", m:"1,115", on:"70", c:"de", t:["gaming","cs2","esports"]},
+ {n:"World of Warcraft Forever — Deutsch", d:"German WoW server with a steady active player base.", m:"1,800", on:"544", c:"de", t:["gaming","wow","mmorpg"]},
+ {n:"Die Gruft", d:"Queer-friendly, respectful alternative server — no age minimum.", m:"374", on:"152", c:"de", t:["alternative","social","chill"]},
+ {n:"Cookietown", d:"Mock-government and nation roleplay community.", m:"279", on:"—", c:"de", t:["roleplay","politics","nations"]},
+ {n:"LangHub [EN | JP | DE]", d:"Language-learning server for English, Japanese and German.", m:"112", on:"—", c:"de", t:["education","language","learning"]},
+ {n:"Stadtbild", d:"Active German social server for talking and meeting other people.", m:"44", on:"5", c:"de", t:["social","chill","german"]},
+ {n:"Die Rappelkiste!", d:"German DayZ survival server — 99% vanilla, fairplay, no mods.", m:"—", on:"—", c:"de", t:["gaming","dayz","survival"]},
+ {n:"Outbreak Germany", d:"One of the largest German DayZ servers on PlayStation.", m:"—", on:"—", c:"de", t:["gaming","dayz","playstation"]},
+
+ // ============ CANADA ============
+ {n:"Canada", d:"The main pan-Canada Discord server — one of the largest communities for Canadians online.", m:"16,779", on:"3,113", c:"ca", t:["canada","national","social"]},
+ {n:"Discord Alberta", d:"Friendly, non-toxic community for all of Alberta — provincial chat, local news and events.", m:"—", on:"—", c:"ca", t:["canada","alberta","province","local"]},
+ {n:"Socializing Server — Canada", d:"Welcoming new people to all of Canada — chillzone, friends, gaming buddies, movie nights.", m:"—", on:"—", c:"ca", t:["canada","social","friends","chill"]},
+ {n:"Chillzone", d:"Canadian chill and gaming hangout — find friends and gaming buddies.", m:"—", on:"—", c:"ca", t:["canada","chill","gaming","friends"]},
+ {n:"Blåhaj Paradise", d:"Canadian social server — heritage and culture discussion.", m:"64", on:"—", c:"ca", t:["canada","culture","social"]},
+ {n:"Gaming Hub (Canada)", d:"Canadian gaming hub for LFG requests across games.", m:"—", on:"—", c:"ca", t:["canada","gaming","lfg"]},
+ {n:"Canada Roleplay", d:"Canadian city and life roleplay servers — FiveM and RP communities.", m:"—", on:"—", c:"ca", t:["canada","roleplay","fivem","rp"]},
+ {n:"Art & Content Creation (CA)", d:"Canadian creators — art, music and content collaboration.", m:"—", on:"—", c:"ca", t:["canada","art","creators","content"]},
+
+ // ============ FRANCE ============
+ {n:"VALORANT FR", d:"Le serveur Discord francophone N°1 de VALORANT — player finder and news.", m:"399,897", on:"38,916", c:"fr", t:["gaming","valorant","esports"]},
+ {n:"Fortnite FR Officiel", d:"Official server for the French-speaking Fortnite community.", m:"214,922", on:"10,410", c:"fr", t:["gaming","fortnite","esports"]},
+ {n:"Brawl Stars FR", d:"Première communauté francophone sur Brawl Stars — player search, news and events.", m:"163,833", on:"4,943", c:"fr", t:["gaming","brawl stars","mobile"]},
+ {n:"Blox Fruits [FR]", d:"French-speaking Blox Fruits community server.", m:"134,063", on:"5,485", c:"fr", t:["gaming","blox fruits","roblox"]},
+ {n:"Steal a Brainrot FR", d:"French-speaking Steal a Brainrot community.", m:"76,537", on:"1,550", c:"fr", t:["gaming","roblox","steal a brainrot"]},
+ {n:"Genshin Impact FR", d:"Entraide, coop et actualités en Français autour de Genshin Impact.", m:"52,193", on:"4,050", c:"fr", t:["gaming","genshin","co-op"]},
+ {n:"Clash Royale FR", d:"Le serveur Francophone du jeu mobile Clash Royale, par Supercell.", m:"31,988", on:"975", c:"fr", t:["gaming","clash royale","mobile"]},
+ {n:"Phasmophobia FR", d:"La Communauté FR N°1 du jeu Phasmophobia — 4-player online co-op horror.", m:"22,452", on:"2,183", c:"fr", t:["gaming","phasmophobia","horror"]},
+ {n:"RCPD:FR", d:"Action-packed emergency responders roleplay community on Roblox.", m:"19,323", on:"3,637", c:"fr", t:["roleplay","roblox","france"]},
+ {n:"KesaLengua", d:"French language practice with native speakers, 17 languages supported.", m:"262", on:"5", c:"fr", t:["education","language","learning"]},
+ {n:"A Safe Place", d:"Une safe place française récente et ouvert à tout le monde.", m:"—", on:"—", c:"fr", t:["social","friendly","france"]},
+
+ // ============ ITALY ============
+ {n:"VALORANT Italia", d:"La prima e vera community Italiana dedicata a VALORANT, supportata da Riot Games.", m:"43,891", on:"5,222", c:"it", t:["gaming","valorant","esports"]},
+ {n:"Italian Paradise RP®", d:"GTA V Roleplay server set in Italy — a leading FiveM RP community.", m:"36,655", on:"1,063", c:"it", t:["roleplay","fivem","gta"]},
+ {n:"Pablo's", d:"Official Pablo's Italian restaurant Discord — run on the Roblox platform.", m:"29,639", on:"2,295", c:"it", t:["gaming","roblox","social"]},
+ {n:"Minecraft Italia", d:"La community italiana di Minecraft, quella del 2011 ancora attiva.", m:"27,351", on:"951", c:"it", t:["gaming","minecraft","building"]},
+ {n:"CasaNostra Italia", d:"CasaNostra è una famiglia — a strong, united family-style Italian server.", m:"23,744", on:"1,181", c:"it", t:["social","gaming","community"]},
+ {n:"Sea of Thieves Italia", d:"L'unica community italiana ufficiale riconosciuta da Rare.", m:"20,270", on:"1,160", c:"it", t:["gaming","sea of thieves","adventure"]},
+ {n:"Paradise Italia", d:"Community social e gaming italiana.", m:"13,021", on:"1,018", c:"it", t:["social","gaming","chill"]},
+ {n:"PUBG MOBILE ITALIA", d:"Server della community Italiana di PUBG MOBILE riconosciuto da Tencent Games.", m:"11,597", on:"167", c:"it", t:["gaming","pubg mobile","mobile"]},
+ {n:"Destiny 2 Italia", d:"Italian Destiny 2 community.", m:"—", on:"—", c:"it", t:["gaming","destiny 2","shooters"]},
+ {n:"S O L L A R Y ☆ | Social • Gaming • Discord Italia", d:"Il server social più grande in Italia.", m:"51,000", on:"5", c:"it", t:["social","gaming","italia"]},
+
+ // ============ SPAIN ============
+ {n:"SpainRol✨ TOP ESPAÑA🔝", d:"Top Spanish community server.", m:"—", on:"—", c:"es", t:["social","spain","espana"]},
+ {n:"Valorant ESP", d:"Spanish VALORANT community.", m:"—", on:"—", c:"es", t:["gaming","valorant","esports"]},
+ {n:"SpainCity RP®", d:"Spanish city roleplay community.", m:"—", on:"—", c:"es", t:["roleplay","spain","rp"]},
+ {n:"LA Spain", d:"Spanish-speaking community server.", m:"—", on:"—", c:"es", t:["social","spain","chat"]},
+ {n:"Among Us - Español", d:"Among Us Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","among us","social"]},
+ {n:"Splatoon Español", d:"Splatoon Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","splatoon","nintendo"]},
+ {n:"Supercell en Español", d:"Clash Royale and Clash of Clans Spanish community.", m:"—", on:"—", c:"es", t:["gaming","clash royale","mobile"]},
+ {n:"Stumble Guys Español", d:"Stumble Guys Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","stumble guys","mobile"]},
+
+ // ============ POLAND ============
+ {n:"Fortnite PL", d:"Oficjalny polski serwer Fortnite! (Official Polish Fortnite server)", m:"49,161", on:"1,254", c:"pl", t:["gaming","fortnite","esports"]},
+ {n:"CraftCube.pl | Community", d:"CraftCube.pl — Polska stale-developing network of Minecraft servers.", m:"163,628", on:"2,923", c:"pl", t:["gaming","minecraft","smp"]},
+ {n:"League of Legends PL", d:"Polska nieoficjalna społeczność poświęcona gry League of Legends.", m:"28,729", on:"1,802", c:"pl", t:["gaming","league of legends","esports"]},
+ {n:"PLS DONATE News", d:"Community-run news source for PLS DONATE on Roblox.", m:"7,908", on:"389", c:"pl", t:["gaming","roblox","news"]},
+ {n:"Chickencraft", d:"Dutch Minecraft community server — since 1.8 through 26.1.", m:"—", on:"—", c:"nl", t:["gaming","minecraft","dutch"]},
+ {n:"[NLD] Kingdom of the Netherlands", d:"Dutch national community — chat and national topics.", m:"—", on:"—", c:"nl", t:["social","dutch","national"]},
+ {n:"Inkville 🎨 Art & Gaming", d:"Dutch community for art and gaming.", m:"—", on:"—", c:"nl", t:["art","gaming","dutch"]},
+ {n:"L1NK", d:"Dutch community server.", m:"—", on:"—", c:"nl", t:["social","dutch","chat"]}
+];
+
+const C = {
+  de:{f:"🇩🇪",label:"German-speaking",q:"ger"},
+  ca:{f:"🇨🇦",label:"Canadian",q:"canada"},
+  fr:{f:"🇫🇷",label:"French",q:"fr"},
+  es:{f:"🇪🇸",label:"Spanish",q:"espanol"},
+  it:{f:"🇮🇹",label:"Italian",q:"italia"},
+  pl:{f:"🇵🇱",label:"Polish",q:"pl"},
+  nl:{f:"🇳🇱",label:"Dutch",q:"nl"}
+};
+
+const list=document.getElementById("list"), countEl=document.getElementById("count"),
+      tabsEl=document.getElementById("tabs");
+let filter="all";
+
+// build tabs
+tabsEl.innerHTML = [["all","🌍 All"]].concat(
+  Object.entries(C).map(([k,v])=>[k, v.f+" "+v.label])
+).map(([k,lab])=>`<button data-f="${k}">${lab}</button>`).join("");
+
+function urlFor(s){ return "https://discord.com/servers/gaming?query=" + C[s.c].q; }
+
+function render(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const items=D.filter(s=>{
+    if(filter!=="all" && s.c!==filter) return false;
+    if(!q) return true;
+    return (s.n+" "+s.d+" "+s.t.join(" ")).toLowerCase().includes(q);
+  });
+  countEl.textContent=items.length+(items.length===1?" server":" servers")
+    +(filter==="all"?"":" in "+C[filter].label+" communities");
+
+  list.innerHTML=items.map(s=>`
+    <div class="card">
+      <div>
+        <div class="name">${s.n}</div>
+        <div class="desc">${s.d}</div>
+        <div class="meta">
+          <span class="chip flag">${C[s.c].f}</span>
+          ${s.m!=="—"?`<span class="chip num">${s.m} members</span>`:""}
+          ${s.t.map(t=>`<span class="chip">${t}</span>`).join("")}
+        </div>
+      </div>
+      <div class="stats">
+        ${s.on!=="—"?`<div class="stat on"><b>${s.on}</b><span>online</span></div>`:""}
+        <a class="join" href="${urlFor(s)}" target="_blank" rel="noopener">Join →</a>
+      </div>
+    </div>`).join("") || `<p class="count">Nothing matched. Try a broader search.</p>`;
+}
+
+document.getElementById("q").addEventListener("input",render);
+tabsEl.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  tabsEl.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); filter=b.dataset.f; render();
+});
+tabsEl.querySelector("button").classList.add("on");
+render();
+</script>
+</body>
+</html>
