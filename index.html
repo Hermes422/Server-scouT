@@ -125,8 +125,8 @@
   .hero-stat .num{font-size:28px;font-weight:800;letter-spacing:-.02em}
   .hero-stat .lbl{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
 
-  /* ===== Search ===== */
-  .search{display:flex;gap:10px;margin:28px 0 14px;flex-wrap:wrap}
+  /* ===== Search & Country Filter ===== */
+  .controls{display:flex;gap:12px;margin:28px 0 14px;flex-wrap:wrap}
   .search-wrap{flex:1;min-width:240px;position:relative}
   .search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;fill:var(--mut);pointer-events:none}
   input[type=search]{
@@ -137,18 +137,19 @@
   input[type=search]::placeholder{color:var(--mut)}
   input[type=search]:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
 
-  /* ===== Tabs ===== */
-  .tabs{display:flex;gap:8px;flex-wrap:wrap}
-  .tabs button{
-    background:var(--surface);border:1px solid var(--border);color:var(--txt-secondary);
-    padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;
-    transition:all .2s ease;display:flex;align-items:center;gap:7px;
+  .country-select-wrap{position:relative;min-width:200px}
+  .country-select-wrap svg.chevron{position:absolute;right:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;fill:var(--mut);pointer-events:none;transition:transform .2s ease}
+  .country-select-wrap:hover svg.chevron{fill:var(--acc)}
+  select#countryFilter{
+    width:100%;appearance:none;-webkit-appearance:none;
+    background:var(--surface);border:1px solid var(--border);
+    color:var(--txt);padding:14px 42px 14px 16px;border-radius:14px;font-size:15px;font-weight:600;
+    cursor:pointer;transition:all .2s ease;
   }
-  .tabs button:hover{background:var(--surface-2);border-color:var(--border-hover);color:var(--txt)}
-  .tabs button.on{
-    background:var(--acc);border-color:var(--acc);color:var(--acc-text);
-    box-shadow:var(--glow);
-  }
+  select#countryFilter:hover{border-color:var(--border-hover)}
+  select#countryFilter:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
+  select#countryFilter option{background:var(--surface);color:var(--txt)}
+
   .count{color:var(--mut);font-size:14px;margin:16px 0 22px;font-weight:500}
 
   /* ===== Grid & Cards ===== */
@@ -244,14 +245,19 @@
   </div>
 </section>
 
-<div class="search">
+<div class="controls">
+  <div class="country-select-wrap">
+    <select id="countryFilter">
+      <option value="all">🌍 All countries</option>
+    </select>
+    <svg class="chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+  </div>
   <div class="search-wrap">
     <svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg>
     <input type="search" id="q" placeholder="Search by name, game or topic — e.g. Minecraft, anime, RP…">
   </div>
 </div>
 
-<div class="tabs" id="tabs"></div>
 <div class="count" id="count"></div>
 
 <div class="grid" id="list"></div>
@@ -383,7 +389,7 @@ const C = {
 };
 
 const list=document.getElementById("list"), countEl=document.getElementById("count"),
-      tabsEl=document.getElementById("tabs");
+      countryFilter=document.getElementById("countryFilter");
 let filter="all";
 
 /* ===== Online count for hero ===== */
@@ -393,10 +399,13 @@ let filter="all";
   document.getElementById("statOnline").textContent=total>0 ? total.toLocaleString() : "—";
 })();
 
-/* ===== Build tabs ===== */
-tabsEl.innerHTML = [["all","🌍","All"]].concat(
-  Object.entries(C).map(([k,v])=>[k, v.f, v.label])
-).map(([k,flag,lab])=>`<button data-f="${k}"><span>${flag}</span> ${lab}</button>`).join("");
+/* ===== Build country dropdown ===== */
+Object.entries(C).forEach(([k,v])=>{
+  const opt=document.createElement("option");
+  opt.value=k;
+  opt.textContent=v.f+" "+v.label;
+  countryFilter.appendChild(opt);
+});
 
 function urlFor(s){ return "https://discord.com/servers/gaming?query=" + C[s.c].q; }
 
@@ -429,12 +438,14 @@ function render(){
 }
 
 document.getElementById("q").addEventListener("input",render);
-tabsEl.addEventListener("click",e=>{
-  const b=e.target.closest("button"); if(!b) return;
-  tabsEl.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
-  b.classList.add("on"); filter=b.dataset.f; render();
+countryFilter.addEventListener("change",()=>{
+  filter=countryFilter.value;
+  const ph=filter==="all"
+    ?"Search by name, game or topic — e.g. Minecraft, anime, RP…"
+    :"Search within "+C[filter].label+" servers — e.g. Minecraft, anime, RP…";
+  document.getElementById("q").placeholder=ph;
+  render();
 });
-tabsEl.querySelector("button").classList.add("on");
 render();
 </script>
 </body>
