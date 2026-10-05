@@ -13,14 +13,6 @@
 <meta property="og:image" content="https://bolt.new/static/og_default.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
-<script>
-  (function(){
-    var t = localStorage.getItem("ss-theme");
-    if(!t && window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) t="light";
-    if(!t) t="dark";
-    document.documentElement.setAttribute("data-theme", t);
-  })();
-</script>
 <style>
   /* ===== Color System ===== */
   :root[data-theme="dark"]{
@@ -43,7 +35,6 @@
     --shadow:0 4px 24px rgba(0,0,0,.35);
     --shadow-lg:0 8px 40px rgba(0,0,0,.45);
     --glow:0 0 20px rgba(91,156,255,.15);
-    color-scheme:dark;
   }
   :root[data-theme="light"]{
     --bg:#f5f7fb;
@@ -65,7 +56,6 @@
     --shadow:0 2px 12px rgba(15,23,42,.08);
     --shadow-lg:0 8px 32px rgba(15,23,42,.12);
     --glow:0 0 20px rgba(37,99,235,.08);
-    color-scheme:light;
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
@@ -106,7 +96,7 @@
     transition:all .2s ease;
   }
   .theme-toggle:hover{border-color:var(--border-hover);color:var(--acc);transform:scale(1.05)}
-  .theme-toggle svg{width:20px;height:20px}
+  .theme-toggle svg{width:20px;height:20px;fill:currentColor}
   .theme-toggle .sun{display:none}
   .theme-toggle .moon{display:block}
   :root[data-theme="light"] .theme-toggle .sun{display:block}
@@ -135,51 +125,30 @@
   .hero-stat .num{font-size:28px;font-weight:800;letter-spacing:-.02em}
   .hero-stat .lbl{font-size:13px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em;margin-top:2px}
 
-  /* ===== Search & Country Filter ===== */
-  .controls{display:flex;gap:12px;margin:28px 0 14px;flex-wrap:wrap}
-  .country-select-wrap{position:relative;min-width:200px}
-  .country-select-wrap svg.chevron{
-    position:absolute;right:14px;top:50%;transform:translateY(-50%);
-    width:18px;height:18px;fill:var(--mut);pointer-events:none;transition:fill .2s ease;
-  }
-  .country-select-wrap:hover svg.chevron{fill:var(--acc)}
-  select#countryFilter{
-    width:100%;appearance:none;-webkit-appearance:none;-moz-appearance:none;
-    background:var(--surface);border:1px solid var(--border);
-    color:var(--txt);padding:14px 42px 14px 16px;border-radius:14px;
-    font-size:15px;font-weight:600;cursor:pointer;transition:all .2s ease;
-  }
-  select#countryFilter:hover{border-color:var(--border-hover)}
-  select#countryFilter:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
-  select#countryFilter option{background:var(--surface);color:var(--txt);padding:10px}
-
-  .search-bar{
-    flex:1;min-width:240px;display:flex;align-items:stretch;
-    background:var(--surface);border:1px solid var(--border);
-    border-radius:14px;transition:all .2s ease;
-  }
-  .search-bar:focus-within{border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
-  .search-icon-left{
-    display:flex;align-items:center;padding-left:16px;
-    color:var(--mut);pointer-events:none;
-  }
-  .search-icon-left svg{width:18px;height:18px;fill:currentColor}
+  /* ===== Search ===== */
+  .search{display:flex;gap:10px;margin:28px 0 14px;flex-wrap:wrap}
+  .search-wrap{flex:1;min-width:240px;position:relative}
+  .search-wrap svg{position:absolute;left:16px;top:50%;transform:translateY(-50%);width:18px;height:18px;fill:var(--mut);pointer-events:none}
   input[type=search]{
-    flex:1;background:transparent;border:none;
-    color:var(--txt);padding:14px 12px;font-size:16px;
-    border-radius:14px;
+    width:100%;background:var(--surface);border:1px solid var(--border);
+    color:var(--txt);padding:14px 16px 14px 46px;border-radius:14px;font-size:16px;
+    transition:all .2s ease;
   }
   input[type=search]::placeholder{color:var(--mut)}
-  input[type=search]:focus{outline:none}
-  .search-btn{
-    background:var(--acc);color:var(--acc-text);border:none;
-    padding:0 20px;border-radius:0 14px 14px 0;cursor:pointer;
-    display:flex;align-items:center;justify-content:center;
-    transition:background .2s ease;
-  }
-  .search-btn:hover{background:var(--acc-hover)}
-  .search-btn svg{width:20px;height:20px;fill:currentColor}
+  input[type=search]:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px var(--acc-soft)}
 
+  /* ===== Tabs ===== */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap}
+  .tabs button{
+    background:var(--surface);border:1px solid var(--border);color:var(--txt-secondary);
+    padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;
+    transition:all .2s ease;display:flex;align-items:center;gap:7px;
+  }
+  .tabs button:hover{background:var(--surface-2);border-color:var(--border-hover);color:var(--txt)}
+  .tabs button.on{
+    background:var(--acc);border-color:var(--acc);color:var(--acc-text);
+    box-shadow:var(--glow);
+  }
   .count{color:var(--mut);font-size:14px;margin:16px 0 22px;font-weight:500}
 
   /* ===== Grid & Cards ===== */
@@ -258,8 +227,8 @@
     Server Scout
   </div>
   <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-    <svg class="moon" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
-    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5" fill="currentColor" stroke="none"/><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="4.2" y1="4.2" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.8" y2="19.8"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/><line x1="4.2" y1="19.8" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.8" y2="4.2"/></svg>
+    <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+    <svg class="sun" viewBox="0 0 24 24"><path d="M12 17a5 5 0 100-10 5 5 0 000 10zM12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
   </button>
 </nav>
 
@@ -275,35 +244,20 @@
   </div>
 </section>
 
-<div class="controls">
-  <div class="country-select-wrap">
-    <select id="countryFilter">
-      <option value="all">All countries</option>
-      <option value="de">German-speaking</option>
-      <option value="ca">Canadian</option>
-      <option value="fr">French</option>
-      <option value="es">Spanish</option>
-      <option value="it">Italian</option>
-      <option value="pl">Polish</option>
-      <option value="nl">Dutch</option>
-    </select>
-    <svg class="chevron" viewBox="0 0 24 24" fill="currentColor"><path d="M7 10l5 5 5-5z"/></svg>
-  </div>
-  <form class="search-bar" id="searchForm" onsubmit="return false">
-    <span class="search-icon-left"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg></span>
+<div class="search">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg>
     <input type="search" id="q" placeholder="Search by name, game or topic — e.g. Minecraft, anime, RP…">
-    <button class="search-btn" id="searchBtn" aria-label="Search" type="submit">
-      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg>
-    </button>
-  </form>
+  </div>
 </div>
 
+<div class="tabs" id="tabs"></div>
 <div class="count" id="count"></div>
 
 <div class="grid" id="list"></div>
 
 <div class="note">
-  <h3><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg> How the links work</h3>
+  <h3><svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg> How the links work</h3>
   <p>Discord invites expire and change often. Instead of guessing invite URLs, every
      <b>Join</b> button here opens that server's official Discord page — where the current working
      invite is right on the page. One click, then you're in.</p>
@@ -320,22 +274,23 @@
 </div>
 
 <script>
-"use strict";
-
 /* ===== Theme Toggle ===== */
-(function(){
-  var toggle = document.getElementById("themeToggle");
-  if(!toggle) return;
-  toggle.addEventListener("click", function(){
-    var cur = document.documentElement.getAttribute("data-theme") || "dark";
-    var next = cur === "dark" ? "light" : "dark";
-    document.documentElement.setAttribute("data-theme", next);
-    try { localStorage.setItem("ss-theme", next); } catch(e){}
-  });
-})();
+const html = document.documentElement;
+const toggle = document.getElementById("themeToggle");
+const saved = localStorage.getItem("ss-theme");
+if (saved) html.setAttribute("data-theme", saved);
+else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches)
+  html.setAttribute("data-theme","light");
+
+toggle.addEventListener("click", () => {
+  const cur = html.getAttribute("data-theme");
+  const next = cur === "dark" ? "light" : "dark";
+  html.setAttribute("data-theme", next);
+  localStorage.setItem("ss-theme", next);
+});
 
 /* ===== Data ===== */
-var D = [
+const D = [
  // ============ GERMAN ============
  {n:"VALORANT Germany", d:"The German/Austrian/Swiss VALORANT community — player finder, rank help and game discussion.", m:"81,053", on:"11,236", c:"de", t:["gaming","valorant","esports"]},
  {n:"Rocket League Germany", d:"The largest and most active Rocket League Discord in the German-speaking world.", m:"47,189", on:"3,787", c:"de", t:["gaming","rocket league","esports"]},
@@ -350,7 +305,7 @@ var D = [
  {n:"Gerxhub", d:"Large German-speaking anime, gaming and hanging-out community.", m:"14,123", on:"—", c:"de", t:["anime","gaming","social"]},
  {n:"Battlefield 6 Germany", d:"Largest German Battlefield 6 server — active community, daily matchmaking.", m:"12,700", on:"—", c:"de", t:["gaming","battlefield","shooters"]},
  {n:"VRChat Germany", d:"Meeting point for the German VRChat community — events and help.", m:"3,939", on:"642", c:"de", t:["vrchat","gaming","social"]},
- {n:"Cafe Velasten", d:"German anime, gaming and general community.", m:"3,150", on:"—", c:"de", t:["anime","gaming","chill"]},
+ {n:"Café Velasten", d:"German anime, gaming and general community.", m:"3,150", on:"—", c:"de", t:["anime","gaming","chill"]},
  {n:"German Battleground", d:"Hell Let Loose community — finding players and running Wardogs servers.", m:"2,137", on:"239", c:"de", t:["gaming","hll","military"]},
  {n:"MindFrag CS2 — Germany", d:"Active German CS2 community — Premier, FACEIT, Wingman and matchmaking.", m:"1,115", on:"70", c:"de", t:["gaming","cs2","esports"]},
  {n:"World of Warcraft Forever — Deutsch", d:"German WoW server with a steady active player base.", m:"1,800", on:"544", c:"de", t:["gaming","wow","mmorpg"]},
@@ -366,160 +321,120 @@ var D = [
  {n:"Discord Alberta", d:"Friendly, non-toxic community for all of Alberta — provincial chat, local news and events.", m:"—", on:"—", c:"ca", t:["canada","alberta","province","local"]},
  {n:"Socializing Server — Canada", d:"Welcoming new people to all of Canada — chillzone, friends, gaming buddies, movie nights.", m:"—", on:"—", c:"ca", t:["canada","social","friends","chill"]},
  {n:"Chillzone", d:"Canadian chill and gaming hangout — find friends and gaming buddies.", m:"—", on:"—", c:"ca", t:["canada","chill","gaming","friends"]},
- {n:"Blahaj Paradise", d:"Canadian social server — heritage and culture discussion.", m:"64", on:"—", c:"ca", t:["canada","culture","social"]},
+ {n:"Blåhaj Paradise", d:"Canadian social server — heritage and culture discussion.", m:"64", on:"—", c:"ca", t:["canada","culture","social"]},
  {n:"Gaming Hub (Canada)", d:"Canadian gaming hub for LFG requests across games.", m:"—", on:"—", c:"ca", t:["canada","gaming","lfg"]},
  {n:"Canada Roleplay", d:"Canadian city and life roleplay servers — FiveM and RP communities.", m:"—", on:"—", c:"ca", t:["canada","roleplay","fivem","rp"]},
  {n:"Art & Content Creation (CA)", d:"Canadian creators — art, music and content collaboration.", m:"—", on:"—", c:"ca", t:["canada","art","creators","content"]},
 
  // ============ FRANCE ============
- {n:"VALORANT FR", d:"Le serveur Discord francophone No.1 de VALORANT — player finder and news.", m:"399,897", on:"38,916", c:"fr", t:["gaming","valorant","esports"]},
+ {n:"VALORANT FR", d:"Le serveur Discord francophone N°1 de VALORANT — player finder and news.", m:"399,897", on:"38,916", c:"fr", t:["gaming","valorant","esports"]},
  {n:"Fortnite FR Officiel", d:"Official server for the French-speaking Fortnite community.", m:"214,922", on:"10,410", c:"fr", t:["gaming","fortnite","esports"]},
- {n:"Brawl Stars FR", d:"Premiere communaute francophone sur Brawl Stars — player search, news and events.", m:"163,833", on:"4,943", c:"fr", t:["gaming","brawl stars","mobile"]},
+ {n:"Brawl Stars FR", d:"Première communauté francophone sur Brawl Stars — player search, news and events.", m:"163,833", on:"4,943", c:"fr", t:["gaming","brawl stars","mobile"]},
  {n:"Blox Fruits [FR]", d:"French-speaking Blox Fruits community server.", m:"134,063", on:"5,485", c:"fr", t:["gaming","blox fruits","roblox"]},
  {n:"Steal a Brainrot FR", d:"French-speaking Steal a Brainrot community.", m:"76,537", on:"1,550", c:"fr", t:["gaming","roblox","steal a brainrot"]},
- {n:"Genshin Impact FR", d:"Entraide, coop et actualites en Francais autour de Genshin Impact.", m:"52,193", on:"4,050", c:"fr", t:["gaming","genshin","co-op"]},
+ {n:"Genshin Impact FR", d:"Entraide, coop et actualités en Français autour de Genshin Impact.", m:"52,193", on:"4,050", c:"fr", t:["gaming","genshin","co-op"]},
  {n:"Clash Royale FR", d:"Le serveur Francophone du jeu mobile Clash Royale, par Supercell.", m:"31,988", on:"975", c:"fr", t:["gaming","clash royale","mobile"]},
- {n:"Phasmophobia FR", d:"La Communaute FR No.1 du jeu Phasmophobia — 4-player online co-op horror.", m:"22,452", on:"2,183", c:"fr", t:["gaming","phasmophobia","horror"]},
+ {n:"Phasmophobia FR", d:"La Communauté FR N°1 du jeu Phasmophobia — 4-player online co-op horror.", m:"22,452", on:"2,183", c:"fr", t:["gaming","phasmophobia","horror"]},
  {n:"RCPD:FR", d:"Action-packed emergency responders roleplay community on Roblox.", m:"19,323", on:"3,637", c:"fr", t:["roleplay","roblox","france"]},
  {n:"KesaLengua", d:"French language practice with native speakers, 17 languages supported.", m:"262", on:"5", c:"fr", t:["education","language","learning"]},
- {n:"A Safe Place", d:"Une safe place francaise recente et ouvert a tout le monde.", m:"—", on:"—", c:"fr", t:["social","friendly","france"]},
+ {n:"A Safe Place", d:"Une safe place française récente et ouvert à tout le monde.", m:"—", on:"—", c:"fr", t:["social","friendly","france"]},
 
  // ============ ITALY ============
  {n:"VALORANT Italia", d:"La prima e vera community Italiana dedicata a VALORANT, supportata da Riot Games.", m:"43,891", on:"5,222", c:"it", t:["gaming","valorant","esports"]},
- {n:"Italian Paradise RP", d:"GTA V Roleplay server set in Italy — a leading FiveM RP community.", m:"36,655", on:"1,063", c:"it", t:["roleplay","fivem","gta"]},
+ {n:"Italian Paradise RP®", d:"GTA V Roleplay server set in Italy — a leading FiveM RP community.", m:"36,655", on:"1,063", c:"it", t:["roleplay","fivem","gta"]},
  {n:"Pablo's", d:"Official Pablo's Italian restaurant Discord — run on the Roblox platform.", m:"29,639", on:"2,295", c:"it", t:["gaming","roblox","social"]},
  {n:"Minecraft Italia", d:"La community italiana di Minecraft, quella del 2011 ancora attiva.", m:"27,351", on:"951", c:"it", t:["gaming","minecraft","building"]},
- {n:"CasaNostra Italia", d:"CasaNostra e una famiglia — a strong, united family-style Italian server.", m:"23,744", on:"1,181", c:"it", t:["social","gaming","community"]},
+ {n:"CasaNostra Italia", d:"CasaNostra è una famiglia — a strong, united family-style Italian server.", m:"23,744", on:"1,181", c:"it", t:["social","gaming","community"]},
  {n:"Sea of Thieves Italia", d:"L'unica community italiana ufficiale riconosciuta da Rare.", m:"20,270", on:"1,160", c:"it", t:["gaming","sea of thieves","adventure"]},
  {n:"Paradise Italia", d:"Community social e gaming italiana.", m:"13,021", on:"1,018", c:"it", t:["social","gaming","chill"]},
  {n:"PUBG MOBILE ITALIA", d:"Server della community Italiana di PUBG MOBILE riconosciuto da Tencent Games.", m:"11,597", on:"167", c:"it", t:["gaming","pubg mobile","mobile"]},
  {n:"Destiny 2 Italia", d:"Italian Destiny 2 community.", m:"—", on:"—", c:"it", t:["gaming","destiny 2","shooters"]},
- {n:"S O L L A R Y | Social Gaming Discord Italia", d:"Il server social piu grande in Italia.", m:"51,000", on:"5", c:"it", t:["social","gaming","italia"]},
+ {n:"S O L L A R Y ☆ | Social • Gaming • Discord Italia", d:"Il server social più grande in Italia.", m:"51,000", on:"5", c:"it", t:["social","gaming","italia"]},
 
  // ============ SPAIN ============
- {n:"SpainRol TOP ESPANA", d:"Top Spanish community server.", m:"—", on:"—", c:"es", t:["social","spain","espana"]},
+ {n:"SpainRol✨ TOP ESPAÑA🔝", d:"Top Spanish community server.", m:"—", on:"—", c:"es", t:["social","spain","espana"]},
  {n:"Valorant ESP", d:"Spanish VALORANT community.", m:"—", on:"—", c:"es", t:["gaming","valorant","esports"]},
- {n:"SpainCity RP", d:"Spanish city roleplay community.", m:"—", on:"—", c:"es", t:["roleplay","spain","rp"]},
+ {n:"SpainCity RP®", d:"Spanish city roleplay community.", m:"—", on:"—", c:"es", t:["roleplay","spain","rp"]},
  {n:"LA Spain", d:"Spanish-speaking community server.", m:"—", on:"—", c:"es", t:["social","spain","chat"]},
- {n:"Among Us - Espanol", d:"Among Us Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","among us","social"]},
- {n:"Splatoon Espanol", d:"Splatoon Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","splatoon","nintendo"]},
- {n:"Supercell en Espanol", d:"Clash Royale and Clash of Clans Spanish community.", m:"—", on:"—", c:"es", t:["gaming","clash royale","mobile"]},
- {n:"Stumble Guys Espanol", d:"Stumble Guys Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","stumble guys","mobile"]},
+ {n:"Among Us - Español", d:"Among Us Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","among us","social"]},
+ {n:"Splatoon Español", d:"Splatoon Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","splatoon","nintendo"]},
+ {n:"Supercell en Español", d:"Clash Royale and Clash of Clans Spanish community.", m:"—", on:"—", c:"es", t:["gaming","clash royale","mobile"]},
+ {n:"Stumble Guys Español", d:"Stumble Guys Spanish-speaking community.", m:"—", on:"—", c:"es", t:["gaming","stumble guys","mobile"]},
 
  // ============ POLAND ============
  {n:"Fortnite PL", d:"Oficjalny polski serwer Fortnite! (Official Polish Fortnite server)", m:"49,161", on:"1,254", c:"pl", t:["gaming","fortnite","esports"]},
  {n:"CraftCube.pl | Community", d:"CraftCube.pl — Polska stale-developing network of Minecraft servers.", m:"163,628", on:"2,923", c:"pl", t:["gaming","minecraft","smp"]},
- {n:"League of Legends PL", d:"Polska nieoficjalna spolecznosc poswiecona gry League of Legends.", m:"28,729", on:"1,802", c:"pl", t:["gaming","league of legends","esports"]},
+ {n:"League of Legends PL", d:"Polska nieoficjalna społeczność poświęcona gry League of Legends.", m:"28,729", on:"1,802", c:"pl", t:["gaming","league of legends","esports"]},
  {n:"PLS DONATE News", d:"Community-run news source for PLS DONATE on Roblox.", m:"7,908", on:"389", c:"pl", t:["gaming","roblox","news"]},
  {n:"Chickencraft", d:"Dutch Minecraft community server — since 1.8 through 26.1.", m:"—", on:"—", c:"nl", t:["gaming","minecraft","dutch"]},
  {n:"[NLD] Kingdom of the Netherlands", d:"Dutch national community — chat and national topics.", m:"—", on:"—", c:"nl", t:["social","dutch","national"]},
- {n:"Inkville Art & Gaming", d:"Dutch community for art and gaming.", m:"—", on:"—", c:"nl", t:["art","gaming","dutch"]},
+ {n:"Inkville 🎨 Art & Gaming", d:"Dutch community for art and gaming.", m:"—", on:"—", c:"nl", t:["art","gaming","dutch"]},
  {n:"L1NK", d:"Dutch community server.", m:"—", on:"—", c:"nl", t:["social","dutch","chat"]}
 ];
 
-var C = {
-  de:{f:"DE",label:"German-speaking",q:"ger"},
-  ca:{f:"CA",label:"Canadian",q:"canada"},
-  fr:{f:"FR",label:"French",q:"fr"},
-  es:{f:"ES",label:"Spanish",q:"espanol"},
-  it:{f:"IT",label:"Italian",q:"italia"},
-  pl:{f:"PL",label:"Polish",q:"pl"},
-  nl:{f:"NL",label:"Dutch",q:"nl"}
+const C = {
+  de:{f:"🇩🇪",label:"German-speaking",q:"ger"},
+  ca:{f:"🇨🇦",label:"Canadian",q:"canada"},
+  fr:{f:"🇫🇷",label:"French",q:"fr"},
+  es:{f:"🇪🇸",label:"Spanish",q:"espanol"},
+  it:{f:"🇮🇹",label:"Italian",q:"italia"},
+  pl:{f:"🇵🇱",label:"Polish",q:"pl"},
+  nl:{f:"🇳🇱",label:"Dutch",q:"nl"}
 };
 
-var FLAGS = {
-  de:"\uD83C\uDDE9\uD83C\uDDEA",
-  ca:"\uD83C\uDDE8\uD83C\uDDE6",
-  fr:"\uD83C\uDDEB\uD83C\uDDF7",
-  es:"\uD83C\uDDEA\uD83C\uDDF8",
-  it:"\uD83C\uDDEE\uD83C\uDDF9",
-  pl:"\uD83C\uDDF5\uD83C\uDDF1",
-  nl:"\uD83C\uDDF3\uD83C\uDDF1"
-};
-
-var list = document.getElementById("list");
-var countEl = document.getElementById("count");
-var countryFilter = document.getElementById("countryFilter");
-var searchInput = document.getElementById("q");
-var searchForm = document.getElementById("searchForm");
-var filter = "all";
+const list=document.getElementById("list"), countEl=document.getElementById("count"),
+      tabsEl=document.getElementById("tabs");
+let filter="all";
 
 /* ===== Online count for hero ===== */
-  var total = 0;
-  for(var i=0;i<D.length;i++){
-    if(D[i].on !== "—"){
-      var n = parseInt(D[i].on.replace(/,/g,""),10);
-      if(n) total += n;
-    }
-  }
-  var st = document.getElementById("statTotal");
-  var so = document.getElementById("statOnline");
-  if(st) st.textContent = D.length;
-  if(so) so.textContent = total > 0 ? total.toLocaleString() : "—";
+  let total=0;
+  D.forEach(s=>{ if(s.on!=="—"){ const n=parseInt(s.on.replace(/,/g,"")); if(n) total+=n; } });
+  document.getElementById("statTotal").textContent=D.length;
+  document.getElementById("statOnline").textContent=total>0 ? total.toLocaleString() : "—";
 })();
+
+/* ===== Build tabs ===== */
+tabsEl.innerHTML = [["all","🌍","All"]].concat(
+  Object.entries(C).map(([k,v])=>[k, v.f, v.label])
+).map(([k,flag,lab])=>`<button data-f="${k}"><span>${flag}</span> ${lab}</button>`).join("");
 
 function urlFor(s){ return "https://discord.com/servers/gaming?query=" + C[s.c].q; }
 
 function render(){
-  var q = (searchInput.value || "").trim().toLowerCase();
-  var items = [];
-  for(var i=0;i<D.length;i++){
-    var s = D[i];
-    if(filter !== "all" && s.c !== filter) continue;
-    if(q && (s.n + " " + s.d + " " + s.t.join(" ")).toLowerCase().indexOf(q) === -1) continue;
-    items.push(s);
-  }
-  countEl.textContent = items.length + (items.length === 1 ? " server" : " servers")
-    + (filter === "all" ? "" : " in " + C[filter].label + " communities");
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const items=D.filter(s=>{
+    if(filter!=="all" && s.c!==filter) return false;
+    if(!q) return true;
+    return (s.n+" "+s.d+" "+s.t.join(" ")).toLowerCase().includes(q);
+  });
+  countEl.textContent=items.length+(items.length===1?" server":" servers")
+    +(filter==="all"?"":" in "+C[filter].label+" communities");
 
-  if(items.length === 0){
-    list.innerHTML = '<div class="empty"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg><br>Nothing matched. Try a broader search.</div>';
-    return;
-  }
-
-  var html = "";
-  for(var j=0;j<items.length;j++){
-    var s = items[j];
-    var flag = FLAGS[s.c] || "";
-    var tags = "";
-    for(var k=0;k<s.t.length;k++){
-      tags += '<span class="chip">' + s.t[k] + '</span>';
-    }
-    html += '<div class="card" style="animation-delay:' + (j*30) + 'ms">'
-      + '<div>'
-      +   '<div class="name">' + s.n + '</div>'
-      +   '<div class="desc">' + s.d + '</div>'
-      +   '<div class="meta">'
-      +     '<span class="chip flag">' + flag + '</span>'
-      +     (s.m !== "—" ? '<span class="chip num">' + s.m + ' members</span>' : '')
-      +     tags
-      +   '</div>'
-      + '</div>'
-      + '<div class="stats">'
-      +   (s.on !== "—" ? '<div class="stat on"><b>' + s.on + '</b><span>online</span></div>' : '')
-      +   '<a class="join" href="' + urlFor(s) + '" target="_blank" rel="noopener">Join <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 5l7 7-7 7v-4H3v-6h11V5z"/></svg></a>'
-      + '</div>'
-      + '</div>';
-  }
-  list.innerHTML = html;
+  list.innerHTML=items.map((s,i)=>`
+    <div class="card" style="animation-delay:${i*30}ms">
+      <div>
+        <div class="name">${s.n}</div>
+        <div class="desc">${s.d}</div>
+        <div class="meta">
+          <span class="chip flag">${C[s.c].f}</span>
+          ${s.m!=="—"?`<span class="chip num">${s.m} members</span>`:""}
+          ${s.t.map(t=>`<span class="chip">${t}</span>`).join("")}
+        </div>
+      </div>
+      <div class="stats">
+        ${s.on!=="—"?`<div class="stat on"><b>${s.on}</b><span>online</span></div>`:""}
+        <a class="join" href="${urlFor(s)}" target="_blank" rel="noopener">Join <svg viewBox="0 0 24 24"><path d="M14 5l7 7-7 7v-4H3v-6h11V5z"/></svg></a>
+      </div>
+    </div>`).join("") || `<div class="empty"><svg viewBox="0 0 24 24"><path d="M15.5 14h-.8l-.3-.3a6.5 6.5 0 10-.7.7l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg><br>Nothing matched. Try a broader search.</div>`;
 }
 
-searchInput.addEventListener("input", render);
-searchForm.addEventListener("submit", function(e){
-  e.preventDefault();
-  render();
+document.getElementById("q").addEventListener("input",render);
+tabsEl.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  tabsEl.querySelectorAll("button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); filter=b.dataset.f; render();
 });
-
-countryFilter.addEventListener("change", function(){
-  filter = countryFilter.value;
-  if(filter === "all"){
-    searchInput.placeholder = "Search by name, game or topic — e.g. Minecraft, anime, RP";
-  } else {
-    searchInput.placeholder = "Search within " + C[filter].label + " servers — e.g. Minecraft, anime, RP";
-  }
-  render();
-});
-
+tabsEl.querySelector("button").classList.add("on");
 render();
 </script>
 </body>
